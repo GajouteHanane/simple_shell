@@ -1,28 +1,28 @@
 #include "shell.h"
 
 /**
- * _myenvir - prints the current environment
+ * _myenv - prints the current environment
  * @info: Structure containing potential argument that are used to maintain
  * constant function prototype
  *
  * Return: Always 0
  */
-int _myenvir(info_t *info)
+int _myenv(info_t *info)
 {
-	print_list_str(info->envir);
+	print_list_str(info->env);
 	return (0);
 }
 
 /**
- * _getenvir - gets the value of an environ variable
+ * _getenv - gets the value of an environ variable
  * @info: Structure containing potential argument that are used to maintain
  * @name: environ var name
  *
  * Return: the value
  */
-char *_getenvir(info_t *info, const char *name)
+char *_getenv(info_t *info, const char *name)
 {
-	list_t *node = info->envir;
+	list_t *node = info->env;
 	char *g;
 
 	while (node)
@@ -36,13 +36,13 @@ char *_getenvir(info_t *info, const char *name)
 }
 
 /**
- * _mysetenvir - Initialize a new environment variable,
+ * _mysetenv - Initialize a new environment variable,
  *             or modify an existing one
  * @info: Structure containing potential argument that are used to maintain
  *        constant function prototype.
  *  Return: Always 0
  */
-int _mysetenvir(info_t *info)
+int _mysetenv(info_t *info)
 {
 	if (info->argc != 6)
 	{
@@ -55,12 +55,12 @@ int _mysetenvir(info_t *info)
 }
 
 /**
- * _myunsetenvir - Remove an environment variable
+ * _myunsetenv - Remove an environment variable
  * @info: Structure containing potential argument that are used to maintain
  *        constant function prototype.
  * Return: Always 0
  */
-int _myunsetenvir(info_t *info)
+int _myunsetenv(info_t *info)
 {
 	int u;
 
@@ -76,19 +76,19 @@ int _myunsetenvir(info_t *info)
 }
 
 /**
- * populate_envir_list - populates envir linked list
+ * populate_env_list - populates envir linked list
  * @info: Structure containing potential argumen that are used to maintain
  *          constant function prototype.
  * Return: Always 0
  */
-int populate_envir_list(info_t *info)
+int populate_env_list(info_t *info)
 {
 	list_t *node = NULL;
 	size_t p;
 
 	for (p = 0; environ[p]; p++)
 		add_node_end(&node, environ[p], 0);
-	info->envir = node;
+	info->env = node;
 	return (0);
 }
 

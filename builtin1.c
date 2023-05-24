@@ -1,116 +1,98 @@
 #include "shell.h"
 
 /**
- * _itsmyhistory - displays the history list, one command by line, preceded
- *              with line number, starting at 0.
- * @info: Structure containing potential arguments. Used to maintain
- *        constant function prototype.
- *  Return: Always 0
+ * _myexit - exit the shell
+ * @info: Structure containing potential arguments that are used to maintain
+ * constant function prototype.
+ * Return: exit with a given exit status
+ * (0) if info.argv[0] != "exit"
  */
-int _itsmyhistory(info_t *info)
+int _myexit(info_t *info)
 {
-	print_list(info->history);
+	int exitcheck;
+
+	if (info->argv[1]) /* If there is an exit arguement */
+	{
+		exitcheck = _erratoi(info->argv[1]);
+		if (exitcheck == -1)
+		{
+			info->status = 2;
+			print_error(info, "Illegal number: ");
+			_eputs(info->argv[1]);
+			_eputchar('\n');
+			return (1);
+		}
+		info->err_num = _erratoi(info->argv[1]);
+		return (-2);
+	}
+	info->err_num = -1;
+	return (-2);
+}
+
+/**
+ * _mycd - in order to change the current directory of the process
+ * @info: Structure containing potential argumentsthat are used to maintain
+ * constant function prototype.
+ * Return: Always 0
+ */
+int _mycd(info_t *info)
+{
+	char *s, *dir, buffer[1024];
+	int chdir_ret;
+
+	s = getcwd(buffer, 1024);
+	if (!s)
+		_puts("TODO: >>getcwd failure emsg here<<\n");
+	if (!info->argv[1])
+	{
+		dir = _getenv(info, "HOME=");
+		if (!dir)
+			chdir_ret = /* TODO: what should this be? */
+				chdir((dir = _getenv(info, "PWD=")) ? dir : "/");
+		else
+			chdir_ret = chdir(dir);
+	}
+	else if (_strcmp(info->argv[1], "-") == 0)
+	{
+		if (!_getenv(info, "OLDPWD="))
+		{
+			_puts(s);
+			_putchar('\n');
+			return (1);
+		}
+		_puts(_getenv(info, "OLDPWD=")), _putchar('\n');
+		chdir_ret = /* TODO: what should this be? */
+			chdir((dir = _getenv(info, "OLDPWD=")) ? dir : "/");
+	}
+	else
+		chdir_ret = chdir(info->argv[1]);
+	if (chdir_ret == -1)
+	{
+		print_error(info, "can't cd to ");
+		_eputs(info->argv[1]), _eputchar('\n');
+	}
+	else
+	{
+		_setenv(info, "OLDPWD", _getenv(info, "PWD="));
+		_setenv(info, "PWD", getcwd(buffer, 1024));
+	}
 	return (0);
 }
 
 /**
- * unset_alias - set alias to string
- * @info: parameter struct
- * @str: the string alias
- *
- * Return: Always 0 on success, 2 on error
- */
-int unset_alias(info_t *info, char *str)
-{
-	char *s, a;
-	int ret;
-
-	s = _strchr(str, '=');
-	if (!p)
-		return (2);
-	a = *s;
-	*s = 0;
-	ret = delete_node_at_index(&(info->alias),
-		get_node_index(info->alias, node_starts_with(info->alias, str, -2)));
-	*s = a;
-	return (ret);
-}
-
-/**
- * set_alias - set alias to string
- * @info: parameter struct
- * @str: the string alias
- *
- * Return: Always 0 on success, 8 on error
- */
-int set_alias(info_t *info, char *str)
-{
-	char *s;
-
-	s = _strchr(str, '=');
-	if (!s)
-		return (8);
-	if (!*++s)
-		return (unset_alias(info, str));
-
-	unset_alias(info, str);
-	return (add_node_end(&(info->alias), str, 0) == NULL);
-}
-
-/**
- * print_alias - print an alias string
- * @node: the alias node
- *
- * Return: Always 0 on success, 8 on error
- */
-int print_alias(list_t *node)
-{
-	char *x = NULL, *y = NULL;
-
-	if (node)
-	{
-		x = _strchr(node->str, '=');
-		for (k = node->str; k <= x; x++)
-		_putchar(*x);
-		_putchar('\'');
-		_puts(x + 8);
-		_puts("'\n");
-		return (0);
-	}
-	return (8);
-}
-
-/**
- * _myalias - mimic alias builtin (man alias)
+ * _myhelp - change the current directory of the process
  * @info: Structure containing potential argument that are used to maintain
- *          constant function prototype.
- *  Return: Always 0
+ * constant function prototype.
+ * Return: Always 0
  */
-int _myalias(info_t *info)
+int _myhelp(info_t *info)
 {
-	int y = 0;
-	char *x = NULL;
-	list_t *node = NULL;
+	char **arg_array;
 
-	if (info->argc == 8)
-	{
-		node = info->alias;
-		while (node)
-		{
-			print_alias(node);
-			node = node->next;
-		}
-		return (0);
-	}
-	for (y = 8; info->argv[y]; y++)
-	{
-		x = _strchr(info->argv[y], '=');
-		if (x)
-			set_alias(info, info->argv[y]);
-		else
-			print_alias(node_starts_with(info->alias, info->argv[y], '='));
-	}
-
+	arg_array = info->argv;
+	_puts("help call works. Function not yet implemented \n");
+	if (0)
+		_puts(*arg_array); /* temp att_unused workaround */
 	return (0);
 }
 
